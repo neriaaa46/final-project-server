@@ -1,18 +1,50 @@
+const {login,register,updateDetails} = require("../DAL/api") 
+const {validationInupts} = require("../DAL/Middleware") 
+const {userValidation, loginValidation} = require("../DAL/validation") 
 var express = require('express');
 var router = express.Router();
 
 
 router.route("/")
-  .get(function(req, res, next) {
-    res.send()}) //get users
-  .post(function(req, res, next) {
-    res.send()}) //add new user
-  
-router.route("/:userId")
-  .get(function(req, res, next) {
-    res.send()}) // get user by id
-  .put(function(req, res, next) {
-    res.send()}) // edit user details
+  .post(validationInupts(userValidation),async function(req, res, next) {
+    try{
+      const [{confirmPassword,...user}] = req.body
+      const registerResponse = await register(user)
+      res.json(registerResponse)
+
+    }catch(error){
+      console.log(error.message)
+      res.json({status:"failed", message:"שגיאת מערכת בהרשמה לאתר"})
+    }
+  }) // register
+
+    
+  .put(validationInupts(userValidation),async function(req, res, next) {
+    try{
+      const [detailsUpdate, userId, userEmail] = req.body
+      const updateResponse = await updateDetails(detailsUpdate, userId, userEmail)
+      res.json(updateResponse)
+
+    }catch(error){
+      console.log(error.message)
+      res.json({status:"failed", message:"שגיאת מערכת בעדכון פרטים"})
+    }
+    res.send()}) // update user details
   
 
-module.exports = router;
+
+router.route("/login")
+  .post(validationInupts(loginValidation),async function(req, res, next) {
+    try{
+      const [{email, password}] = req.body
+      const loginResponse = await login(email, password)
+      res.json(loginResponse)
+
+    }catch(error){
+      console.log(error.message)
+      res.json({status:"failed", message:"שגיאת מערכת בהתחברות לאתר"})
+    }
+  }) // login
+
+
+module.exports = router
