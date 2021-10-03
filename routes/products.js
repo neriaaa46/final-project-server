@@ -1,4 +1,6 @@
 const {getProducts, getProductId, addProduct, changeAcitveProduct, editProduct} = require("../DAL/api") 
+const {validateCookieUser, validateCookieAdmin} = require("../DAL/Middleware") 
+
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -30,7 +32,7 @@ const productImageUplod = upload.single('product')
   })
 
   
-  .post(productImageUplod, async function(req, res, next) {
+  .post(validateCookieAdmin, productImageUplod, async function(req, res, next) {
     try{
       const product = req.body
       product["image"] = `${req.file.filename}`
@@ -43,7 +45,7 @@ const productImageUplod = upload.single('product')
     }
   })
   
-  .put(productImageUplod, async function(req, res, next) {
+  .put(validateCookieAdmin, productImageUplod, async function(req, res, next) {
     try{
       const product = req.body
       if(req.file){
@@ -58,8 +60,8 @@ const productImageUplod = upload.single('product')
     }
    })
 
-
-    router.get("/admin", async function(req, res, next) {
+   router.route("/admin")
+   .get(validateCookieAdmin, async function(req, res, next) {
       try{
         const products = await getProducts(true)
         res.json(products)
@@ -84,7 +86,7 @@ const productImageUplod = upload.single('product')
     }
   })
 
-  .put(async function(req, res, next) {
+  .put(validateCookieUser, async function(req, res, next) {
       try{
         const {active} = req.body
         const {id} = req.params

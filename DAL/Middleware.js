@@ -1,18 +1,4 @@
 const { validation } = require("./validation")
-const multer = require('multer');
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, `public/images/`)
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${file.fieldname}-${Date.now()}.${file.mimetype === 'image/jpeg' ? 'jpg' : 'png'}`)
-  }
-})
-
-const upload = multer({storage:storage})
-const cpUpload = upload.single('product')
-
 
 
 function validationInupts(objectValidation){
@@ -36,15 +22,26 @@ function validationInupts(objectValidation){
     }
 }
 
+function validateCookieUser(req, res, next){
+    const {cookies} = req
 
-function checkAdminUser(req, res, next){
-    [userDetails] = req.body
-    if(userDetails.admin === 1){
+    if("user" in cookies){
         next()
-    } else {
-        res.json({status:"failed", message:"משתמש לא חוקי"})
-    }
+
+      } else {
+        res.json({status: "failed", message: "Unauthorized"})
+      }
+}
+
+function validateCookieAdmin(req, res, next){
+    const {cookies} = req
+    if("admin" in cookies){
+        next()
+
+      } else {
+        res.json({status: "failed", message: "Unauthorized"})
+      }
 }
 
 
-module.exports = {validationInupts, checkAdminUser, cpUpload}
+module.exports = {validationInupts, validateCookieUser, validateCookieAdmin}

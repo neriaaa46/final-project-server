@@ -1,5 +1,5 @@
-const {getUsersRecommendations, addRecommendation, deleteRecommendation} = require("../DAL/api") 
-const {validationInupts, checkAdminUser} = require("../DAL/Middleware") 
+const {getUsersRecommendations, addRecommendation, deleteRecommendation, changeActiveRecommendation} = require("../DAL/api") 
+const {validationInupts, validateCookieUser, validateCookieAdmin} = require("../DAL/Middleware") 
 const {recommendationValidation} = require("../DAL/validation") 
 
 var express = require('express');
@@ -8,11 +8,11 @@ var router = express.Router();
 
 router.route("/")
   .get(async function(req, res, next) {
-    const recommendations = await getUsersRecommendations()
+    const recommendations = await getUsersRecommendations(false)
     res.json(recommendations)}) //get recommendations
     
 
-  .post(validationInupts(recommendationValidation), async function(req, res, next) {
+  .post(validateCookieUser, validationInupts(recommendationValidation), async function(req, res, next) {
     try{
       [{text}, userId] = req.body
       const addRecommendationResponse = await addRecommendation(text, userId)
@@ -24,7 +24,19 @@ router.route("/")
     }
   })
 
-  .delete(checkAdminUser, async function(req, res, next){
+  .put(validateCookieAdmin, async function(req, res, next) {
+    try{
+      [recommendationId, active] = req.body
+      const changeRecommendationResponse = await changeActiveRecommendation(recommendationId, active)
+      res.send(changeRecommendationResponse)
+
+    }catch (error){
+      console.log(error.message)
+      res.send({status:"failed", message:"שגיאת מערכת בעדכון פעילות"})
+    }
+  })
+
+  .delete(validateCookieAdmin, async function(req, res, next){
     try{
       const [userDetails, recommendationId] = req.body
       const deleteRecommendationResponse = await deleteRecommendation(recommendationId)
@@ -35,6 +47,13 @@ router.route("/")
       res.send({status:"failed", message: "שגיאת מערכת המלצה לא נמחקה"})
     }
   })
+
+  router.route("/admin")
+  .get(validateCookieAdmin, async function(req, res, next) {
+    const recommendations = await getUsersRecommendations(true)
+    res.json(recommendations)
+  }) //get recommendations
+  
   
   
 module.exports = router

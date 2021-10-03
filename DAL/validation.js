@@ -7,7 +7,7 @@ const userValidation = {
     errors: [], 
     validations: {
         required: true, 
-        pattern: /^[a-z\u0590-\u05fe]+$/i
+        pattern: /^[a-z \u0590-\u05fe]+$/i
     }
     }, 
     lastName: {
@@ -18,7 +18,7 @@ const userValidation = {
         errors:[], 
         validations:{
             required: true, 
-            pattern: /^[a-z\u0590-\u05fe]+$/i
+            pattern: /^[a-z \u0590-\u05fe]+$/i
         }
     },
     email: {
@@ -36,7 +36,7 @@ const userValidation = {
         value: '',
         name:"סיסמא",
         inValid:false,
-        appropriateError:"לפחות 6 תווים עם אות וספרה",
+        appropriateError:"לפחות 6 תווים עם אות (אנגלית) וספרה",
         errors:[], 
         validations:{
             required: true, 
@@ -70,8 +70,8 @@ const loginValidation = {
     password: {
         value: '',
         name:"סיסמא",
-        inValid:false,
-        appropriateError:"לפחות 6 תווים עם אות וספרה",
+        inValid:false, 
+        appropriateError:"לפחות 6 תווים עם אות (אנגלית) וספרה",
         errors:[], 
         validations:{
             required: true, 
@@ -88,8 +88,8 @@ const recommendationValidation = {
         appropriateError:"לפחות 10 תווים חוקיים",
         errors:[], 
         validations:{
-            required: true, 
-            pattern:  /^[!-+:/,? ^+=-a-z\u0590-\u05fe]{10,}$/i  
+            required: true,  
+            pattern: /^[!-+:/,.? ^+-=0-9\a-z\u0590-\u05fe]{10,}$/i   
         }
     }
 }
@@ -131,6 +131,76 @@ const addressValidation = {
     
 }
 
+
+const contactUsValidation = {
+    firstName: {
+        value: '', 
+        name:"שם פרטי",
+        inValid:false,
+        appropriateError:"אותיות בלבד",
+        errors: [], 
+        validations: {
+            required: true, 
+            pattern: /^[a-z \u0590-\u05fe]+$/i
+        }
+    }, 
+    lastName: {
+        value: '',
+        name:"שם משפחה",
+        inValid:false,
+        appropriateError:"אותיות בלבד",
+        errors:[], 
+        validations:{
+            required: true, 
+            pattern: /^[a-z \u0590-\u05fe]+$/i
+        }
+    },
+    email: {
+        value: '',
+        name:"דואר אלקטרוני",
+        inValid:false,
+        appropriateError:"לא תקין", 
+        errors:[], 
+        validations:{
+            required: true, 
+            pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ 
+            }
+    },
+    phone: {
+        value: '',
+        name:"טלפון",
+        inValid:false,
+        appropriateError:"ספרות בלבד ",
+        errors:[], 
+        validations:{
+            required: true, 
+            pattern: /[0-9]$/ 
+        }
+    },
+    subject: {
+        value: '',
+        name:"נושא פנייה",
+        inValid:false,
+        appropriateError:false,
+        errors:[], 
+        validations:{
+            required: true, 
+            pattern: false
+        }
+    },
+    text: {
+        value: '',
+        name:"טקסט",
+        inValid:false,
+        appropriateError:"לפחות 10 תווים חוקיים",
+        errors:[], 
+        validations:{
+            required: true, 
+            pattern:   /^[!-+:/,.? ^+-=0-9\a-z\u0590-\u05fe]{10,}$/i 
+        }
+    }
+}
+
 function validation(value,name,inputsDetails){
     const newErrors = []
     let inValid = false
@@ -159,4 +229,4 @@ function validation(value,name,inputsDetails){
 
 }
 
-module.exports = {validation, userValidation, loginValidation, recommendationValidation, addressValidation}
+module.exports = {validation, userValidation, loginValidation, recommendationValidation, addressValidation, contactUsValidation}

@@ -1,10 +1,12 @@
 const {getCategorys} = require("../DAL/api") 
+const {validateCookieAdmin} = require("../DAL/Middleware") 
+
 var express = require('express');
 var router = express.Router();
 
 
 router.route("/")
-  .get(async function(req, res, next) {
+  .get(validateCookieAdmin, async function(req, res, next) {
     try{
       const categorys = await getCategorys()
       res.json(categorys)

@@ -1,5 +1,5 @@
 const {login,register,updateDetails} = require("../DAL/api") 
-const {validationInupts} = require("../DAL/Middleware") 
+const {validationInupts, validateCookieUser} = require("../DAL/Middleware") 
 const {userValidation, loginValidation} = require("../DAL/validation") 
 var express = require('express');
 var router = express.Router();
@@ -19,7 +19,7 @@ router.route("/")
   }) // register
 
     
-  .put(validationInupts(userValidation),async function(req, res, next) {
+  .put(validateCookieUser, validationInupts(userValidation),async function(req, res, next) {
     try{
       const [detailsUpdate, userId, userEmail] = req.body
       const updateResponse = await updateDetails(detailsUpdate, userId, userEmail)
@@ -33,11 +33,19 @@ router.route("/")
   
 
 
+
 router.route("/login")
   .post(validationInupts(loginValidation),async function(req, res, next) {
     try{
       const [{email, password}] = req.body
       const loginResponse = await login(email, password)
+      
+      if(loginResponse.userDetails.admin===1){
+        res.cookie('admin', `${loginResponse.userDetails.admin}`)
+        res.cookie('user', `${loginResponse.userDetails.id}`)
+      } else {
+        res.cookie('user', `${loginResponse.userDetails.id}`)
+      }
       res.json(loginResponse)
 
     }catch(error){
