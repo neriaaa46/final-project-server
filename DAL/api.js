@@ -12,6 +12,14 @@ const con = mysql.createConnection({
   database: "project_store",
 })
 
+
+
+
+
+
+
+
+
 //users
 
 async function register(userDetails) {
@@ -72,6 +80,15 @@ async function updateDetails(
   }
   return { status: "failed", message: "אימייל זה קיים במערכת" }
 }
+
+
+
+
+
+
+
+
+
 
 //products
 
@@ -135,6 +152,12 @@ async function changeAcitveProduct(active, id) {
   return { status: "ok", message: "שינוי פעילות המוצר בוצעה בהצלחה" }
 }
 
+
+
+
+
+
+
 // orders
 
 async function sendNewOrder(
@@ -187,12 +210,12 @@ async function sendNewOrder(
 
       let currentPath = path.join(
         "C:/Users/נריה/Desktop/project-store/server/public/",
-        "imagesOrders",
+        "imagesCart",
         `${products[i].images[j]}`
       )
       let destinationPath = path.join(
         "C:/Users/נריה/Desktop/project-store/server/public/",
-        "imagesDataBase",
+        "imagesOrders",
         `${products[i].images[j]}`
       )
 

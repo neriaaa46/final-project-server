@@ -4,7 +4,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, `public/imagesOrders/`)
+    cb(null, `public/imagesCart/`)
   },
   filename: function (req, file, cb) {
     cb(null, `${file.fieldname}-${Date.now()}.${file.mimetype === 'image/jpeg' ? 'jpg' : 'png'}`)
