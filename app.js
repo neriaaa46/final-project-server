@@ -11,6 +11,7 @@ const recommendationsRouter = require('./routes/recommendations')
 const categorysRouter = require('./routes/categorys')
 const imagesRouter = require('./routes/images')
 const emailRouter = require('./routes/email')
+const db = require("./utils/dbConnection")
 
 const app = express();
 const cors = require("cors");
@@ -37,18 +38,15 @@ app.use('/images', imagesRouter);
 app.use('/email', emailRouter);
 
 
-const mysql = require('mysql2');
-
-    const con = mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      password: "465691",
-      database: "project_store"
-    })
-    
-    con.connect(function(err) {
-      if (err) throw err;
-      console.log("Connected!");
-    });
+db.getConnection(function(err, connection){
+  if(err){
+      return cb(err);
+  }
+  connection.changeUser({database: 'project_store'});
+  connection.query("SELECT * from user", function(err, data){
+      connection.release();
+      cb(err, data);
+  });
+});
 
 module.exports = app;

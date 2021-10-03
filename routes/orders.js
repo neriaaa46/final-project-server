@@ -1,6 +1,6 @@
 const {getOrdersByUser, getOrders, getStatusOrder, getLastUserAddress, updateStatusOrder, sendNewOrder, searchOrdersBy} = require("../DAL/api") 
-const {validationInupts, validateCookieUser, validateCookieAdmin} = require("../DAL/Middleware") 
-const {addressValidation} = require("../DAL/validation") 
+const {validationInupts, validateCookieUser, validateCookieAdmin} = require("../utils/Middleware") 
+const {addressValidation} = require("../utils/validation") 
 
 var express = require('express')
 var router = express.Router()

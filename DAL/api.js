@@ -1,20 +1,9 @@
 const fs = require("fs")
 const path = require("path")
 const sgMail = require("@sendgrid/mail")
+const db = require("../utils/dbConnection")
 
 sgMail.setApiKey(process.env.SEND_EMAIL_KEY)
-
-const mysql = require("mysql2/promise")
-const con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "465691",
-  database: "project_store",
-})
-
-
-
-
 
 
 
@@ -23,7 +12,7 @@ const con = mysql.createConnection({
 //users
 
 async function register(userDetails) {
-  const connector = await con
+  const connector = await db
   const query = `select email from user
                   where email = ? `
   const [[emailRecived]] = await connector.query(query, [userDetails.email])
@@ -39,7 +28,7 @@ async function register(userDetails) {
 }
 
 async function login(email, password) {
-  const connector = await con
+  const connector = await db
   const query = `select userId as id, firstName, lastName, email, admin, password
                   from user
                   where email = ? `
@@ -61,7 +50,7 @@ async function updateDetails(
   userId,
   userEmail
 ) {
-  const connector = await con
+  const connector = await db
   const query = `select email from user
                   where email = ? `
   const [[emailRecived]] = await connector.query(query, [email])
@@ -93,7 +82,7 @@ async function updateDetails(
 //products
 
 async function getProducts(isAdmin) {
-  const connector = await con
+  const connector = await db
   if (isAdmin) {
     const query =
       "select productId, name, size, price, image, active from products"
@@ -108,7 +97,7 @@ async function getProducts(isAdmin) {
 }
 
 async function getProductId(id) {
-  const connector = await con
+  const connector = await db
   const query = `select productId, name, size, description, price, quantityImages, image, active, categoryId 
                 from products where productId = ?`
   const [[product]] = await connector.query(query, [id])
@@ -116,7 +105,7 @@ async function getProductId(id) {
 }
 
 async function addProduct(product) {
-  const connector = await con
+  const connector = await db
   const sql = "insert into products set ?"
   connector.query(sql, [product], function (err) {
     if (err) throw err
@@ -125,7 +114,7 @@ async function addProduct(product) {
 }
 
 async function editProduct({ productId, ...product }) {
-  const connector = await con
+  const connector = await db
   const sql = `update products 
                set ? 
                where productId = ?`
@@ -136,14 +125,14 @@ async function editProduct({ productId, ...product }) {
 }
 
 async function getCategorys() {
-  const connector = await con
+  const connector = await db
   const query = "select categoryId, name from category"
   const [categorys] = await connector.query(query)
   return categorys
 }
 
 async function changeAcitveProduct(active, id) {
-  const connector = await con
+  const connector = await db
   const sql = "update products set active = ? where productId = ?"
 
   connector.query(sql, [active, id], function (err) {
@@ -166,7 +155,7 @@ async function sendNewOrder(
   totalPrice,
   products
 ) {
-  const connector = await con
+  const connector = await db
   const sql1 =
     "insert into address set userId = ? , address = ? , phone = ? , zip = ? "
   const addressId = await connector.query(
@@ -284,7 +273,7 @@ async function sendOrderEmail(user, cart) {
 }
 
 async function getOrdersByUser(userId) {
-  const connector = await con
+  const connector = await db
   const query1 = `select *
                 from orders join user on orders.userId = user.userId
                 join address on address.addressId = orders.addressId 
@@ -302,7 +291,7 @@ async function getOrdersByUser(userId) {
 }
 
 async function getOrders() {
-  const connector = await con
+  const connector = await db
   const query1 = `select orders.orderId, user.userId, date, totalPrice, firstName, lastName, email, address, phone, zip, status
                 from orders join user on orders.userId = user.userId
                 join address on address.addressId = orders.addressId 
@@ -325,7 +314,7 @@ async function getOrders() {
 }
 
 async function searchOrdersBy(searchby, searchValue) {
-  const connector = await con
+  const connector = await db
   let query1, query2, query3
 
   console.log("searchby:", searchby, "searchValue:", searchValue)
@@ -418,7 +407,7 @@ function addProductsToOrders(orders, productsOforder) {
 }
 
 async function updateStatusOrder(orderId, statusId) {
-  const connector = await con
+  const connector = await db
   const sql = `update orders set statusId = ? 
                 where orderId = ? `
   connector.query(sql, [statusId, orderId], function (err) {
@@ -428,7 +417,7 @@ async function updateStatusOrder(orderId, statusId) {
 }
 
 async function getStatusOrder(orderId) {
-  const connector = await con
+  const connector = await db
   const query = `select status 
                  from orders 
                  join order_status on orders.statusId = order_status.statusId
@@ -460,7 +449,7 @@ function whichClassStatus(status) {
 }
 
 async function getLastUserAddress(userId) {
-  const connector = await con
+  const connector = await db
   const query = `select address, phone, zip 
                 from orders 
                 join address on orders.userId = address.userId
@@ -474,7 +463,7 @@ async function getLastUserAddress(userId) {
 // recommendations
 
 async function getUsersRecommendations(isAdmin) {
-  const connector = await con
+  const connector = await db
   if (isAdmin) {
     const query = `select recommendationId, firstName, lastName, text , active
     from user 
@@ -493,7 +482,7 @@ async function getUsersRecommendations(isAdmin) {
 }
 
 async function addRecommendation(text, userId) {
-  const connector = await con
+  const connector = await db
   const sql = "insert into recommendation set text = ? , userId = ?"
 
   connector.query(sql, [text, userId], function (err) {
@@ -504,7 +493,7 @@ async function addRecommendation(text, userId) {
 }
 
 async function changeActiveRecommendation(recommendationId, active) {
-  const connector = await con
+  const connector = await db
   const sql = `update recommendation set active = ? 
               where recommendationId = ?`
   connector.query(sql, [active, recommendationId], function (err) {
@@ -514,7 +503,7 @@ async function changeActiveRecommendation(recommendationId, active) {
 }
 
 async function deleteRecommendation(recommendationId) {
-  const connector = await con
+  const connector = await db
   const sql = "delete from recommendation where recommendationId = ?"
 
   connector.query(sql, [recommendationId], function (err) {

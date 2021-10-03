@@ -1,5 +1,5 @@
 const {getCategorys} = require("../DAL/api") 
-const {validateCookieAdmin} = require("../DAL/Middleware") 
+const {validateCookieAdmin} = require("../utils/Middleware") 
 
 var express = require('express');
 var router = express.Router();

@@ -1,5 +1,5 @@
 const {getProducts, getProductId, addProduct, changeAcitveProduct, editProduct} = require("../DAL/api") 
-const {validateCookieUser, validateCookieAdmin} = require("../DAL/Middleware") 
+const {validateCookieUser, validateCookieAdmin} = require("../utils/Middleware") 
 
 const express = require('express');
 const router = express.Router();

@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
-const {validationInupts, validateCookieUser} = require("../DAL/Middleware") 
-const {contactUsValidation} = require("../DAL/validation") 
+const {validationInupts, validateCookieUser} = require("../utils/Middleware") 
+const {contactUsValidation} = require("../utils/validation") 
 const { sendOrderEmail, contactUsEmail } = require("../DAL/api")
 
 router.route("/")

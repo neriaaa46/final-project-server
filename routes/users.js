@@ -1,6 +1,6 @@
 const {login,register,updateDetails} = require("../DAL/api") 
-const {validationInupts, validateCookieUser} = require("../DAL/Middleware") 
-const {userValidation, loginValidation} = require("../DAL/validation") 
+const {validationInupts, validateCookieUser} = require("../utils/Middleware") 
+const {userValidation, loginValidation} = require("../utils/Middleware") 
 var express = require('express');
 var router = express.Router();
 

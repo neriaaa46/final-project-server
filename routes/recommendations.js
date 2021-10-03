@@ -1,6 +1,6 @@
 const {getUsersRecommendations, addRecommendation, deleteRecommendation, changeActiveRecommendation} = require("../DAL/api") 
-const {validationInupts, validateCookieUser, validateCookieAdmin} = require("../DAL/Middleware") 
-const {recommendationValidation} = require("../DAL/validation") 
+const {validationInupts, validateCookieUser, validateCookieAdmin} = require("../utils/Middleware") 
+const {recommendationValidation} = require("../utils/Middleware") 
 
 var express = require('express');
 var router = express.Router();
