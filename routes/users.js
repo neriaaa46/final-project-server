@@ -40,13 +40,16 @@ router.route("/login")
       const [{email, password}] = req.body
       const loginResponse = await login(email, password)
       
-      if(loginResponse.userDetails.admin===1){
+      if(loginResponse.status === 'ok' && loginResponse.userDetails.admin === 1){
         res.cookie('admin', `${loginResponse.userDetails.admin}`)
-        res.cookie('user', `${loginResponse.userDetails.id}`)
+        res.cookie('user', `${loginResponse.userDetails.id}`).json(loginResponse)
+
+      } else if (loginResponse.status === 'ok') {
+        res.cookie('user', `${loginResponse.userDetails.id}`).json(loginResponse)
+
       } else {
-        res.cookie('user', `${loginResponse.userDetails.id}`)
+        res.json(loginResponse)
       }
-      res.json(loginResponse)
 
     }catch(error){
       console.log(error.message)

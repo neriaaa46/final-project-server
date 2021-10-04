@@ -32,18 +32,24 @@ async function login(email, password) {
   const query = `select userId as id, firstName, lastName, email, admin, password
                   from user
                   where email = ? `
+
   const [[user]] = await connector.query(query, [email])
 
   if (!user) {
     return { status: "failed", message: "אימייל לא קיים במערכת" }
+
   } else {
+
     if (user.email === email && user.password === password) {
       const { password, ...userDetails } = user
       return { status: "ok", userDetails, message: "התחברות הצליחה" }
     }
+
     return { status: "failed", message: "סיסמא זו אינה נכונה" }
+
   }
 }
+
 
 async function updateDetails(
   { firstName, lastName, email, password },
