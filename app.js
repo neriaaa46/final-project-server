@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
+require('dotenv').config();
 
 const indexRouter = require('./routes/index')
 const usersRouter = require('./routes/users')
@@ -12,6 +13,7 @@ const categorysRouter = require('./routes/categorys')
 const imagesRouter = require('./routes/images')
 const emailRouter = require('./routes/email')
 const db = require("./utils/dbConnection")
+
 
 const app = express();
 const cors = require("cors");

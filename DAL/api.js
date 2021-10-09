@@ -3,8 +3,7 @@ const path = require("path")
 const sgMail = require("@sendgrid/mail")
 const db = require("../utils/dbConnection")
 
-sgMail.setApiKey(process.env.SEND_EMAIL_KEY)
-
+sgMail.setApiKey(process.env.EMAIL_KEY_SEND_GRID)
 
 
 
@@ -26,6 +25,7 @@ async function register(userDetails) {
   }
   return { status: "failed", message: "אימייל זה קיים במערכת" }
 }
+
 
 async function login(email, password) {
   const connector = await db
@@ -204,12 +204,12 @@ async function sendNewOrder(
       )
 
       let currentPath = path.join(
-        "C:/Users/נריה/Desktop/project-store/server/public/",
+        "public/",
         "imagesCart",
         `${products[i].images[j]}`
       )
       let destinationPath = path.join(
-        "C:/Users/נריה/Desktop/project-store/server/public/",
+        "public/",
         "imagesOrders",
         `${products[i].images[j]}`
       )
@@ -228,6 +228,8 @@ async function sendNewOrder(
     orderId: orderId[0].insertId,
   }
 }
+
+
 
 async function sendOrderEmail(user, cart) {
   const totalPrice = cart.reduce((sum, item) => {
@@ -278,6 +280,7 @@ async function sendOrderEmail(user, cart) {
   return { statusMail: "ok", message: "פרטי ההזמנה נשלחו אליך למייל" }
 }
 
+
 async function getOrdersByUser(userId) {
   const connector = await db
   const query1 = `select *
@@ -287,7 +290,7 @@ async function getOrdersByUser(userId) {
 
   const query2 = `select orders_products.orderId, products.productId, products.name, products.size, products.quantityImages, products.price, products.image 
                 from orders_products join products on orders_products.productId = products.productId
-                where orders_products.orderId  in (select orderId from orders where userId =?)`
+                where orders_products.orderId in (select orderId from orders where userId =?)`
 
   const [orderOfUser] = await connector.query(query1, [userId])
   const [productsOforder] = await connector.query(query2, [userId])
@@ -295,6 +298,7 @@ async function getOrdersByUser(userId) {
   addProductsToOrders(orderOfUser, productsOforder)
   return orderOfUser
 }
+
 
 async function getOrders() {
   const connector = await db
@@ -315,15 +319,14 @@ async function getOrders() {
   const [imagesOfProduct] = await connector.query(query3)
 
   addImagesToProduct(products, imagesOfProduct)
-  addProductsToOrders(orders, products, imagesOfProduct)
+  addProductsToOrders(orders, products)
   return orders
 }
+
 
 async function searchOrdersBy(searchby, searchValue) {
   const connector = await db
   let query1, query2, query3
-
-  console.log("searchby:", searchby, "searchValue:", searchValue)
 
   if (searchby === "1") {
     query1 = `select orders.orderId, user.userId, date, totalPrice, firstName, lastName, email, address, phone, zip, status
@@ -342,6 +345,7 @@ async function searchOrdersBy(searchby, searchValue) {
             from orders_images join orders_products on orders_products.ordersProductsId = orders_images.ordersProductsId
             join orders on orders_products.orderId = orders.orderId
             where orders.statusId  =  ?`
+
   } else if (searchby === "2") {
     query1 = `select orders.orderId, user.userId, date, totalPrice, firstName, lastName, email, address, phone, zip, status
             from orders join user on orders.userId = user.userId
@@ -356,6 +360,7 @@ async function searchOrdersBy(searchby, searchValue) {
     query3 = `select orders_images.ordersProductsId , orders_images.images
             from orders_images join orders_products on orders_products.ordersProductsId = orders_images.ordersProductsId
             where orders_products.orderId = ?`
+
   } else if (searchby === "3") {
     query1 = `select orders.orderId, user.userId, date, totalPrice, firstName, lastName, email, address, phone, zip, status
           from orders join user on orders.userId = user.userId
@@ -380,10 +385,10 @@ async function searchOrdersBy(searchby, searchValue) {
   const [products] = await connector.query(query2, [searchValue])
   const [imagesOfProduct] = await connector.query(query3, [searchValue])
   addImagesToProduct(products, imagesOfProduct)
-  addProductsToOrders(orders, products, imagesOfProduct)
-  console.log(orders)
+  addProductsToOrders(orders, products)
   return orders
 }
+
 
 function addImagesToProduct(productsOforder, imagesOfProduct) {
   for (let i = 0; i < productsOforder.length; i++) {
@@ -400,6 +405,7 @@ function addImagesToProduct(productsOforder, imagesOfProduct) {
   }
 }
 
+
 function addProductsToOrders(orders, productsOforder) {
   for (let i = 0; i < orders.length; i++) {
     let product = []
@@ -412,6 +418,7 @@ function addProductsToOrders(orders, productsOforder) {
   }
 }
 
+
 async function updateStatusOrder(orderId, statusId) {
   const connector = await db
   const sql = `update orders set statusId = ? 
@@ -421,6 +428,7 @@ async function updateStatusOrder(orderId, statusId) {
   })
   return { status: "ok", message: "סטאטוס עודכן בהצלחה" }
 }
+
 
 async function getStatusOrder(orderId) {
   const connector = await db
@@ -432,6 +440,7 @@ async function getStatusOrder(orderId) {
   statusClassName = whichClassStatus(statusOrder.status)
   return statusClassName
 }
+
 
 function whichClassStatus(status) {
   switch (status) {
@@ -454,6 +463,7 @@ function whichClassStatus(status) {
   return status
 }
 
+
 async function getLastUserAddress(userId) {
   const connector = await db
   const query = `select address, phone, zip 
@@ -465,6 +475,12 @@ async function getLastUserAddress(userId) {
   const [[address]] = await connector.query(query, [userId])
   return address
 }
+
+
+
+
+
+
 
 // recommendations
 
@@ -518,6 +534,10 @@ async function deleteRecommendation(recommendationId) {
   return { status: "ok", message: "המלצה נמחקה בהצלחה" }
 }
 
+
+/*contact us*/
+
+
 async function contactUsEmail({
   firstName,
   lastName,
@@ -526,6 +546,7 @@ async function contactUsEmail({
   subject,
   text,
 }) {
+
   const msg = {
     to: "neriaaa46@gmail.com",
     from: "neriaaa46@gmail.com",
@@ -543,7 +564,7 @@ async function contactUsEmail({
               <td style ="border: 1px solid #dddddd; padding: 8px;">${phone}</td>
               <td style ="border: 1px solid #dddddd; padding: 8px;">${text}</td>
             </tr>
-          </table>`,
+          </table>`
   }
   sgMail
     .send(msg)
